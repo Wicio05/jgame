@@ -13,7 +13,11 @@ import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
@@ -27,6 +31,9 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.system.MemoryUtil.NULL;
+
+import jgame.event.KeyListener;
+import jgame.event.MouseListener;
 
 public class Window 
 {
@@ -80,6 +87,12 @@ public class Window
 			throw new RuntimeException("Failed to create the GLFW window");
         }
 
+        // Set callbacks
+        glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseBtnCallabck);
+        glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
+        glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
+
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(glfwWindow);
 		// Enable v-sync
@@ -115,19 +128,23 @@ public class Window
 		}
     }
 
-    public void run()
+    private void cleanup()
     {
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
-
-		init();
-		loop();
-
-		// Free the window callbacks and destroy the window
+        // Free the window callbacks and destroy the window
 		glfwFreeCallbacks(glfwWindow);
 		glfwDestroyWindow(glfwWindow);
 
 		// Terminate GLFW and free the error callback
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
+    }
+
+    public void run()
+    {
+        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+
+		init();
+		loop();
+        cleanup();
     }
 }
