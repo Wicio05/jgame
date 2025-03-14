@@ -3,7 +3,10 @@ package jgame;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glDrawElements;
-import static org.lwjgl.opengl.GL20.glUseProgram;
+
+import jgame.renderer.IndexBuffer;
+import jgame.renderer.Shader;
+import jgame.renderer.VertexBuffer;
 
 public class LevelEditorScene extends Scene
 {
@@ -15,7 +18,7 @@ public class LevelEditorScene extends Scene
 
     public LevelEditorScene()
     {
-        this.shader = new Shader();
+        this.shader = new Shader("assets/shaders/defaultVert.glsl", "assets/shaders/defaultFrag.glsl");
         this.vbo = new VertexBuffer();
         this.ibo = new IndexBuffer();
     }
@@ -24,7 +27,6 @@ public class LevelEditorScene extends Scene
     public void init()
     {
         shader.compile();
-        shader.link();
     }
 
     @Override
@@ -36,8 +38,7 @@ public class LevelEditorScene extends Scene
     @Override
     public void render()
     {
-        // bind shader program
-        glUseProgram(shader.getProgId());
+        shader.use();
 
         // bind vao
         vbo.bind();
@@ -53,6 +54,6 @@ public class LevelEditorScene extends Scene
 
         vbo.unbind();
 
-        glUseProgram(0);
+        shader.detach();
     }
 }

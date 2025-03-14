@@ -1,4 +1,4 @@
-package jgame;
+package jgame.renderer;
 
 import java.nio.FloatBuffer;
 

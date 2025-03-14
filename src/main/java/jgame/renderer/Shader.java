@@ -1,4 +1,8 @@
-package jgame;
+package jgame.renderer;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
@@ -16,49 +20,29 @@ import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 import static org.lwjgl.opengl.GL20.glGetShaderi;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class Shader 
 {
-    private String vertSrc = "#version 410 core\n" + //
-                "layout (location = 0) in vec3 aPos;\n" + //
-                "layout (location = 1) in vec4 aColor;\n" + //
-                "\n" + //
-                "out vec4 fColor;\n" + //
-                "\n" + //
-                "void main()\n" + //
-                "{\n" + //
-                "    fColor = aColor;\n" + //
-                "\n" + //
-                "    gl_Position = vec4(aPos, 1.0);\n" + //
-                "}";
+    private String vertSrc;
+    private String fragSrc;
 
-    private String fragSrc = "#version 410 core\n" + //
-                "\n" + //
-                "in vec4 fColor;\n" + //
-                "\n" + //
-                "out vec4 color;\n" + //
-                "\n" + //
-                "void main()\n" + //
-                "{\n" + //
-                "    color = fColor;\n" + //
-                "}";
-
-    private int vertId;
-    private int fragId;
     private int shaderProgram;
 
-    public Shader()
+    public Shader(String vertFilePath, String fragFilePath)
     {
-
+        vertSrc = readFromFile(vertFilePath);
+        fragSrc = readFromFile(fragFilePath);
     }
 
     /**
-     * Compiles shaders
+     * Compiles shaders and links shaders
+     * 
     */
     public void compile()
     {
-        // System.out.println(glGetString(GL_VERSION));
-        // System.out.println(glGetString(GL_SHADING_LANGUAGE_VERSION));
+        int vertId;
+        int fragId;
 
         // create shader
         vertId = glCreateShader(GL_VERTEX_SHADER);
@@ -95,14 +79,7 @@ public class Shader
             System.err.println(glGetShaderInfoLog(fragId, lenght));
             assert false: ""; 
         }
-    }
 
-    /**
-     * Links shaders
-     * 
-     */
-    public void link()
-    {
         // link shaders
         shaderProgram = glCreateProgram();
         glAttachShader(shaderProgram, vertId);
@@ -110,7 +87,7 @@ public class Shader
         glLinkProgram(shaderProgram);
 
         // check for errors
-        int result = glGetProgrami(shaderProgram, GL_LINK_STATUS);
+        result = glGetProgrami(shaderProgram, GL_LINK_STATUS);
 
         if(result == GL_FALSE)
         {
@@ -121,8 +98,29 @@ public class Shader
         }
     }
 
-    public int getProgId()
+    public void use()
     {
-        return shaderProgram;
+        // bind shader program
+        glUseProgram(shaderProgram);
+    }
+
+    public void detach()
+    {
+        glUseProgram(0);
+    }
+
+    private String readFromFile(String filepath)
+    {
+        try
+        {
+            return new String(Files.readAllBytes(Paths.get(filepath)));
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+            assert false: "ERROR: File not found. " + filepath;
+        }
+
+        return null;
     }
 }
