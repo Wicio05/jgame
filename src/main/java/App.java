@@ -1,3 +1,4 @@
+import jgame.Window;
 
 /**
  * Main app
@@ -7,6 +8,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println("Hello world");
+        Window window = Window.get();
+        window.run();
     }
 }
