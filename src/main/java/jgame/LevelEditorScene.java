@@ -1,39 +1,58 @@
 package jgame;
 
-import java.awt.event.KeyEvent;
-
-import jgame.event.KeyListener;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class LevelEditorScene extends Scene
 {
-    private boolean changingScene = false;
-    private float timeToChangeScene = 2.0f;
+    private Shader shader;
+
+    private VertexBuffer vbo;
+    
+    private IndexBuffer ibo;
 
     public LevelEditorScene()
     {
-        System.out.println("Inside level editor scene");
+        this.shader = new Shader();
+        this.vbo = new VertexBuffer();
+        this.ibo = new IndexBuffer();
+    }
+
+    @Override
+    public void init()
+    {
+        shader.compile();
+        shader.link();
     }
 
     @Override
     public void update(float dt)
     {
-        System.out.println("" + (1.0f / dt) + "FPS");
 
-        if(!changingScene && KeyListener.isKeyPressed(KeyEvent.VK_SPACE))
-        {
-            changingScene = true;
-        }
+    }
 
-        if(changingScene && timeToChangeScene > 0.0f)
-        {
-            timeToChangeScene -= dt;
-            Window.get().r -= 5.0f * dt;
-            Window.get().g -= 5.0f * dt;
-            Window.get().b -= 5.0f * dt;
-        }
-        else if(changingScene)
-        {
-            Window.changeScene(1);
-        }
+    @Override
+    public void render()
+    {
+        // bind shader program
+        glUseProgram(shader.getProgId());
+
+        // bind vao
+        vbo.bind();
+
+        // enable atrributes
+        vbo.enableAttributes();
+
+        // draw
+        glDrawElements(GL_TRIANGLES, ibo.getSize(), GL_UNSIGNED_INT, 0);
+
+        // unbind everything
+        vbo.disableAttributes();
+
+        vbo.unbind();
+
+        glUseProgram(0);
     }
 }

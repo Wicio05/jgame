@@ -2,8 +2,12 @@ package jgame;
 
 import org.lwjgl.Version;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
@@ -78,13 +82,15 @@ public class Window
             case 0:
             {
                 currentScene = new LevelEditorScene();
-                // currentScene.init();
+                currentScene.init();
                 break;
             }
 
             case 1:
             {
                 currentScene = new LevelScene();
+                currentScene.init();
+                break;
             }
 
             default:
@@ -112,6 +118,9 @@ public class Window
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		// Create the window
 		glfwWindow = glfwCreateWindow(this.width, this.height, title, NULL, NULL);
@@ -165,6 +174,7 @@ public class Window
                 currentScene.update(dt);
             }
 
+            currentScene.render();
 
             // Swap the color buffers
 			glfwSwapBuffers(glfwWindow);
