@@ -1,9 +1,12 @@
 package jgame.renderer;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
@@ -18,8 +21,10 @@ import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
 import static org.lwjgl.opengl.GL20.glGetProgrami;
 import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 import static org.lwjgl.opengl.GL20.glGetShaderi;
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class Shader 
@@ -107,6 +112,15 @@ public class Shader
     public void detach()
     {
         glUseProgram(0);
+    }
+
+    public void uploadMat4f(String varName, Matrix4f mat)
+    {
+        int varLocation = glGetUniformLocation(shaderProgram, varName);
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+        mat.get(buffer);
+
+        glUniformMatrix4fv(varLocation, false, buffer);
     }
 
     private String readFromFile(String filepath)

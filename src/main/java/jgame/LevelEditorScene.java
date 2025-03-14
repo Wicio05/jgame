@@ -1,9 +1,14 @@
 package jgame;
 
+import java.awt.event.KeyEvent;
+
+import org.joml.Vector2f;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 
+import jgame.event.KeyListener;
+import jgame.renderer.Camera;
 import jgame.renderer.IndexBuffer;
 import jgame.renderer.Shader;
 import jgame.renderer.VertexBuffer;
@@ -21,6 +26,7 @@ public class LevelEditorScene extends Scene
         this.shader = new Shader("assets/shaders/defaultVert.glsl", "assets/shaders/defaultFrag.glsl");
         this.vbo = new VertexBuffer();
         this.ibo = new IndexBuffer();
+        this.camera = new Camera(new Vector2f());
     }
 
     @Override
@@ -32,13 +38,33 @@ public class LevelEditorScene extends Scene
     @Override
     public void update(float dt)
     {
+        if(KeyListener.isKeyPressed(KeyEvent.VK_A))
+        {
+            camera.position.x -= 1.0f;
+        }
 
+        if(KeyListener.isKeyPressed(KeyEvent.VK_D))
+        {
+            camera.position.x += 1.0f;
+        }
+
+        if(KeyListener.isKeyPressed(KeyEvent.VK_W))
+        {
+            camera.position.y += 1.0f;
+        }
+
+        if(KeyListener.isKeyPressed(KeyEvent.VK_S))
+        {
+            camera.position.y -= 1.0f;
+        }
     }
 
     @Override
     public void render()
     {
         shader.use();
+        shader.uploadMat4f("uProjection", camera.getProjection());
+        shader.uploadMat4f("uView", camera.getView());
 
         // bind vao
         vbo.bind();
