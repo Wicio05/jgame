@@ -34,22 +34,31 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import jgame.event.KeyListener;
 import jgame.event.MouseListener;
+import jgame.util.Time;
 
 public class Window 
 {
+    private static Window window = null;
+
+    private long glfwWindow;
+    
     private int width;
     private int height;
     private String title;
 
-    private static Window window = null;
+    public float r;
+    public float g;
+    public float b;
+    public float a;
 
-    private long glfwWindow;
+    private static Scene currentScene = null;
 
     private Window()
     {
         this.width = 1920;
         this.height = 1080;
         this.title = "jGame";
+        this.r = this.g = this.b = this.a = 1.0f;
     }
 
     public static Window get()
@@ -60,6 +69,31 @@ public class Window
         }
 
         return Window.window;
+    }
+
+    public static void changeScene(int newScene)
+    {
+        switch(newScene)
+        {
+            case 0:
+            {
+                currentScene = new LevelEditorScene();
+                // currentScene.init();
+                break;
+            }
+
+            case 1:
+            {
+                currentScene = new LevelScene();
+            }
+
+            default:
+            {
+                // Unknown scene
+                assert false: "Unknown scene " + newScene;
+                break;
+            }
+        }
     }
 
     private void init()
@@ -107,24 +141,42 @@ public class Window
 		// creates the GLCapabilities instance and makes the OpenGL
 		// bindings available for use.
 		GL.createCapabilities();
+
+        Window.changeScene(0);
     }
 
     private void loop()
     {
-		// Set the clear color
-		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
+        float startTime = Time.getTime();
+        float endTime = startTime;
+        float dt = -1.0f;
+        
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
 		while (!glfwWindowShouldClose(glfwWindow)) 
         {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-			glfwSwapBuffers(glfwWindow); // swap the color buffers
+            // Set the clear color
+		    glClearColor(r, g, b, a);
+
+            if(dt >= 0)
+            {
+                currentScene.update(dt);
+            }
+
+
+            // Swap the color buffers
+			glfwSwapBuffers(glfwWindow);
 
 			// Poll for window events. The key callback above will only be
 			// invoked during this call.
 			glfwPollEvents();
+
+            // Delta time
+            endTime = Time.getTime();
+            dt = endTime - startTime;
+            startTime = endTime;
 		}
     }
 
