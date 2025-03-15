@@ -191,6 +191,11 @@ public class Shader
         glUniform1i(varLocation, val);
     }
 
+    public void uploadTexture(String varName, int slot)
+    {
+        uploadInt(varName, slot);
+    }
+
     private String readFromFile(String filepath)
     {
         try

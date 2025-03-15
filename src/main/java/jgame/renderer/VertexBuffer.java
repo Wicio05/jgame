@@ -19,10 +19,10 @@ public class VertexBuffer
 {
     private float[] vertexArray = 
     {
-         50.5f, -50.5f,  0.0f, 0.5f, 0.5f, 0.5f, 1.0f,
-        -50.5f,  50.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-         50.5f,  50.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        -50.5f, -50.5f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+         50.5f, -50.5f,     0.0f, 0.5f, 0.5f, 0.5f, 1.0f,   1, 1,   // bottom right
+        -50.5f,  50.5f,     0.0f, 1.0f, 0.0f, 0.0f, 1.0f,   0, 0,   // top left
+         50.5f,  50.5f,     0.0f, 0.0f, 1.0f, 0.0f, 1.0f,   1, 0,   // top right
+        -50.5f, -50.5f,     0.0f, 0.0f, 0.0f, 1.0f, 1.0f,   0, 1,   // bottom left
     };
 
     private int vaoId;
@@ -46,15 +46,20 @@ public class VertexBuffer
         // add vertex attribute pointers
         int posSize = 3;
         int colorSize = 4;
-        int vertexSize = (posSize + colorSize) * 4;
+        int uvSize = 2;
+        int vertexSize = (posSize + colorSize + uvSize) * Float.BYTES;
 
         // specify the position in the array at location 0
         glVertexAttribPointer(0, posSize, GL_FLOAT, false, vertexSize, 0);
         glEnableVertexAttribArray(0);
 
         // specify the color in the array at location 1
-        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSize, posSize * 4);
+        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSize, posSize * Float.BYTES);
         glEnableVertexAttribArray(1);
+
+        // specify texture in the array at location 2
+        glVertexAttribPointer(2, uvSize, GL_FLOAT, false, vertexSize, (posSize + colorSize) * Float.BYTES);
+        glEnableVertexAttribArray(2);
     }
 
     public void enableAttributes()

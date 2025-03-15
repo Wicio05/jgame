@@ -6,16 +6,21 @@ import org.joml.Vector2f;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import jgame.event.KeyListener;
 import jgame.renderer.Camera;
 import jgame.renderer.IndexBuffer;
 import jgame.renderer.Shader;
+import jgame.renderer.Texture;
 import jgame.renderer.VertexBuffer;
 
 public class LevelEditorScene extends Scene
 {
     private Shader shader;
+
+    private Texture texture;
 
     private VertexBuffer vbo;
     
@@ -24,6 +29,7 @@ public class LevelEditorScene extends Scene
     public LevelEditorScene()
     {
         this.shader = new Shader("assets/shaders/defaultVert.glsl", "assets/shaders/defaultFrag.glsl");
+        this.texture = new Texture("assets/images/testImage.png");
         this.vbo = new VertexBuffer();
         this.ibo = new IndexBuffer();
         this.camera = new Camera(new Vector2f());
@@ -65,6 +71,10 @@ public class LevelEditorScene extends Scene
         shader.use();
         shader.uploadMat4f("uProjection", camera.getProjection());
         shader.uploadMat4f("uView", camera.getView());
+
+        shader.uploadTexture("TEX_SAMPLER", 0);
+        glActiveTexture(GL_TEXTURE0);
+        texture.bind();
 
         // bind vao
         vbo.bind();
